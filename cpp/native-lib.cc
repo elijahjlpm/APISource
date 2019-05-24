@@ -1,3 +1,10 @@
+/**
+ * @file native-lib.cc
+ * @author IMU API team
+ *
+ * This file contains all parts of the API running in C++.
+ */
+
 #include <jni.h>
 #include <string>
 #include "math.h"
@@ -163,6 +170,9 @@ bool isSubset(ld *arr1, ld *arr2, int m, int n){
 
 extern "C" JNIEXPORT jdoubleArray JNICALL
 //format for android: Java_com_<packagename but replace "." with "_">_where function is called_FunctionName
+/**
+ * This method is for processing IMU byte frames into a sample of physical data.
+ */
 Java_com_example_apisource_frameproc_frpfxn(
         JNIEnv *env,
         jobject /* this */,
@@ -231,6 +241,10 @@ Java_com_example_apisource_frameproc_frpfxn(
     }
 }
 
+/**
+ * This method is the heuristic multi-threaded gesture detection algorithm.
+ * @return string of the name of the gesture detected
+ */
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_apisource_apithread_apirunmt(
         JNIEnv *env,
@@ -523,6 +537,10 @@ Java_com_example_apisource_apithread_apirunmt(
     }
 }
 
+/**
+ * This method is the heuristic single-threaded gesture detection algorithm.
+ * @return string of the name of the gesture detected
+ */
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_apisource_apithread_apirun(
         JNIEnv *env,
@@ -781,6 +799,10 @@ Java_com_example_apisource_apithread_apirun(
     return result;
 }
 
+/**
+ * This method is the HMM gesture detection algorithm.
+ * @return string of the name of the gesture detected
+ */
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_apisource_apithread_apirunhmm(
         JNIEnv *env,

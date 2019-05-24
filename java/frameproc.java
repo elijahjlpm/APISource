@@ -1,3 +1,13 @@
+/**
+ * @file frameproc.java
+ * @author IMU API team
+ *
+ * This processes frame of bytes from IMU into physical data.
+ * This also passes 100 samples of physical data into the API thread which returns gesture detected.
+ * Contains the updated and received flag used for synchronization with the API thread.
+ * Also contains the String object gesture which contains the API thread's output.
+ */
+
 package com.example.apisource;
 
 import android.util.Log;
@@ -24,6 +34,10 @@ public class frameproc implements Runnable{
     apithread api = new apithread();
     Thread AT = new Thread(api); //gesture recognition algorithm runs in a different thread
 
+    /**
+     * Frame buffer is reset everytime a gesture is detected.
+     * Waits for received flag to be enabled by main thread when a gesture is detected.
+     */
     public void run(){
         AT.start();
         for(int row = 0; row < 100; row++) Arrays.fill(buff[row], 0);

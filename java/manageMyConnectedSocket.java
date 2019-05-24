@@ -1,3 +1,11 @@
+/**
+ * @file manageMyConnectedSocket.java
+ * @author IMU API team
+ *
+ * This follows the Android documentation on how to handle established Bluetooth connection.
+ * This also includes grouping byte stream from IMU into frames.
+ */
+
 package com.example.apisource;
 
 import android.bluetooth.BluetoothSocket;
@@ -14,6 +22,9 @@ public class manageMyConnectedSocket implements Runnable{
     private final OutputStream mmOutStream;
     frameproc proc;
 
+    /**
+     * Creates byte stream between IMU and Android machine running the application.
+     */
     public manageMyConnectedSocket(BluetoothSocket socket) {
         mmSocket = socket;
         InputStream tmpIn = null;
@@ -36,6 +47,9 @@ public class manageMyConnectedSocket implements Runnable{
         mmOutStream = tmpOut;
     }
 
+    /**
+     * Receives bytes from IMU and checks for packet headers before sending to frame processing thread.
+     */
     public void run(){
         proc = new frameproc();
         int numBytes; //counter of remaining bytes in byte stream

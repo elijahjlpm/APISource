@@ -1,3 +1,11 @@
+/**
+ * @file ConnectThread.java
+ * @author IMU API team
+ *
+ * This follows the Android documentation on establishing a connection with a Bluetooth Device.
+ * Edit the UUID in this file to match that of the IMU you wish to connect to.
+ */
+
 package com.example.apisource;
 
 import android.bluetooth.BluetoothAdapter;
@@ -17,6 +25,9 @@ public class ConnectThread implements Runnable{
     BluetoothAdapter btadpt;
     manageMyConnectedSocket ManThread;
 
+    /**
+     * Creates a socket to be used for Bluetooth connection.
+     */
     public ConnectThread(BluetoothDevice device, BluetoothAdapter bluetoothAdapter) {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
@@ -34,6 +45,9 @@ public class ConnectThread implements Runnable{
         mmSocket = tmp;
     }
 
+    /**
+     * Uses the socket to establish a connection between IMU and Android device.
+     */
     public void run() {
         // Cancel discovery because it otherwise slows down the connection.
         btadpt.cancelDiscovery();
@@ -56,8 +70,7 @@ public class ConnectThread implements Runnable{
             Log.d(TAG, "Sleep error!", e);
         }
 
-        // The connection attempt succeeded. Perform work associated with
-        // the connection in a separate thread.
+        // The connection attempt succeeded. Perform work associated with the connection in a separate thread.
         ManThread = new manageMyConnectedSocket(mmSocket);
         Thread bthread = new Thread(ManThread);
         bthread.start();

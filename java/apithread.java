@@ -1,3 +1,10 @@
+/**
+ * @file apithread.java
+ * @author IMU API team
+ *
+ * This contains the thread which detects gestures based on a chosen gesture detection algorithm.
+ */
+
 package com.example.apisource;
 
 import android.util.Log;
@@ -9,12 +16,18 @@ public class apithread implements Runnable{
     static {
         System.loadLibrary("native-lib");
     }
-    public native String apirunmt(double[][] darr); //multithreaded version
-    public native String apirun(double[][] darr);
-    public native String apirunhmm(double[][] darr);
+    public native String apirunmt(double[][] darr); //multithreaded version of heuristic
+    public native String apirun(double[][] darr); //normal heuristic
+    public native String apirunhmm(double[][] darr); //hmm
     public static volatile String apiout = "none";
     public static volatile double[][] apiInput;
     public static volatile int done = 0;
+    /**
+     * Thread.sleep can be modified for responsiveness but is limited by the Android machine's hardware.
+     * This raises the done flag when a gesture is detected.
+     * Stops when a gesture hasnt been received by the main thread yet.
+     * Edit line 41 to choose gesture detection algorithm.
+     */
     public void run(){
         while(true){
             try{

@@ -1,3 +1,12 @@
+/**
+ * @file functions.java
+ * @brief This file contains the main thread for the Android Application.
+ * @author IMU API team
+ *
+ * This file contains functions used in the java side of the API.
+ * This also contains methods which may be used for debugging during runtime.
+ */
+
 package com.example.apisource;
 
 import android.os.Environment;
@@ -13,6 +22,9 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class functions {
+    /**
+     * Removes the oldest sample in the buffer by shifting all the other samples' index by 1.
+     */
     public static double[][] RemoveLeastRecent(double[][] array, int rows, int cols){//to keep imu buffer for model as 100 most recent samples
         int i = 0;
         while(i<rows-1){
@@ -20,6 +32,9 @@ public class functions {
             i++;
         } return array;
     }
+    /**
+     * Copies two-dimensional arrays. Used for copying buffer into API thread input and resetting buffer after gesture detection.
+     */
     public static double[][] Copy2DimDouble(double[][] src, int rows, int cols){//can copy buffer corresponding to gesture, for debugging
         int i = 0;
         double[][] dest = new double[rows][cols];
@@ -28,6 +43,9 @@ public class functions {
             i++;
         } return dest;
     }
+    /**
+     * Logs samples into a file via appending.
+     */
     public static void LogData(File path, double[] array, int cols){ //adds 1 frame in a new line of specified file
         // when starting new log with same name, overwrite file  with append = false since function only appends
         int i = 0;
@@ -45,6 +63,9 @@ public class functions {
             e.printStackTrace();
         }
     }
+    /**
+     * Stores buffer into a file.
+     */
     public static void bufftofile(double[][] array, int cols, int rows, String filename){
         //stores buffer to file
         File root = Environment.getExternalStorageDirectory();
@@ -75,7 +96,6 @@ public class functions {
             e.printStackTrace();
         }
     }
-
     public static void RemoveFirstLine(File input){//for raw nou oof (deprecated)
         try {
             Scanner fileScanner = new Scanner(input);
@@ -97,12 +117,18 @@ public class functions {
             e.printStackTrace();
         }
     }
+    /**
+     * Takes a time stamp up to the milliseconds resolution. Can be used to get the time it takes from receiving a frame up to gesture detection.
+     */
     public static String getCurrentTimeStamp(){ //can be used to know latency between time frame arrived and frame processed in debugging without adb which can cause larger delays
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Date now = new Date();
         String strDate = sdfDate.format(now);
         return strDate;
     }
+    /**
+     * Implementation of a low pass filter. Can be used for noisy data due to non-idealities with the IMU.
+     */
     public static double[] LPF(double[] curr, double[][] prev, long size, double factor){
         int i = 0;
         int j = 0;

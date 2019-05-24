@@ -1,3 +1,12 @@
+/**
+ * @file MainActivity.java
+ * @brief This file contains the main thread for the Android Application.
+ * @author IMU API team
+ *
+ * This file is to be modified by appending the developers' intended
+ * application after API threads are running.
+ */
+
 package com.example.apisource;
 
 import android.annotation.TargetApi;
@@ -36,12 +45,20 @@ public class MainActivity extends AppCompatActivity {
     Handler h;
     Runnable r;
 
+    //Code for granting permission starts here
     private static final int PERMISSION_REQUEST_CODE = 200;
+    /**
+     * This checks if the application already has permissions to read and write files.
+     * @return true if permissions not yet granted
+     */
     protected boolean checkPermission(){
         return ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 ;
     }
+    /**
+     * This requests for permissions before continuing application execution.
+     */
     protected void requestPermissionAndContinue(){
         if(ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -78,25 +95,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //required for writing to external storage
+    /**
+     * This checks if Android machine external storage is available.
+     */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if(Environment.MEDIA_MOUNTED.equals(state)) return true;
         return false;
     }
-
+    //Code for permissions end here
 
     //permissions checked on start of activity
+    /**
+     * This is the start of the main thread.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        if (!checkPermission()) openActivity();
+        if (!checkPermission()) openActivity(); // if permission granted, continue app execution
         else{
-            if(checkPermission()) requestPermissionAndContinue();
+            if(checkPermission()) requestPermissionAndContinue(); //request permission if not yet granted
             else openActivity();
         }
     }
 
     //close pipes on exit
+    /**
+     * This executes on exit to be able to continue communicating with IMU via Bluetooth next time the application is opened.
+     */
     public void onDestroy() {
         super.onDestroy();
         try {
@@ -107,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * parts of the application that runs after permissions have been granted
+     */
     public void openActivity(){ //parts of the application that runs after permissions have been granted
         try {
             pos = new PipedOutputStream();
@@ -134,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView tv2 = findViewById(R.id.data);
         final TextView tv3 = findViewById(R.id.gesturedata);
 
+        //Starting API by first establishing Bluetooth connection with IMU
         api_bt btsample = new api_bt();
         btsample.act = this;
         btsample.btadt = BluetoothAdapter.getDefaultAdapter(); //use phone's built-in bt adapter
@@ -152,6 +182,9 @@ public class MainActivity extends AppCompatActivity {
                 //application code separate from the api starts here
                 h = new Handler(); //for viewing data received from imu
                 r = new Runnable(){
+                    /**
+                     * For displaying IMU data
+                     */
                     @Override
                     public void run() {
                         if(ConThread.ManThread != null) if(ConThread.ManThread.proc != null) if(ConThread.ManThread.proc.AT.isAlive()) apiinit = 1;
