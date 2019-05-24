@@ -1,6 +1,5 @@
 /**
  * @file functions.java
- * @brief This file contains the main thread for the Android Application.
  * @author IMU API team
  *
  * This file contains functions used in the java side of the API.
