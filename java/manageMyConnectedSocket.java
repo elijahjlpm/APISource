@@ -44,26 +44,7 @@ public class manageMyConnectedSocket implements Runnable{
         Thread cthread = new Thread(proc);
         cthread.start(); //this has to be done in a separate thread to reduce latency
         // Keep listening to the InputStream until an exception occurs.
-        while (true) {
-            try{
-                if(mmInStream.available() >= 33) numBytes = mmInStream.read();
-                else continue;
-                if((numBytes == 0x55)){
-                    numBytes = mmInStream.read();
-                    if(numBytes == 0x51){
-                        mmInStream.read(frame);
-                        if(frame[8] == (byte)(0x55 + 0x51 + frame[0] + frame[1] + frame[2] + frame[3] + frame[4] + frame[5] + frame[6] + frame[7])){
-                            if(frame[19] == (byte)(0x55 + 0x52 + frame[11] + frame[12] + frame[13] + frame[14] + frame[15] + frame[16] + frame[17] + frame[18])){
-                                if(frame[30] == (byte)(0x55 + 0x53 + frame[22] + frame[23] + frame[24] + frame[25] + frame[26] + frame[27] + frame[28] + frame[29])) break;
-                            }
-                        }
-                    }
-                }
-            }catch(IOException e){
-                Log.d(TAG, "Input stream was disconnected", e);
-                break;
-            }
-        }
+
         while(true){
             try{
                 if(proc.AT.isAlive()){

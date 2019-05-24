@@ -18,14 +18,14 @@ public class apithread implements Runnable{
     public void run(){
         while(true){
             try{
-                Thread.sleep(1);
+                Thread.sleep(250);
             }catch(InterruptedException e){
                 Log.d("APIThread", "Sleep error.");
             }
             if((apiInput != null) && (done == 0)){
                 while(frameproc.updated == 0);
                 apiInput = functions.Copy2DimDouble(buff, 100, 9);
-                apiout = apirun(apiInput);
+                apiout = apirunmt(apiInput);
                 if(apiout.equals("none") == FALSE) done = 1; //gesture was detected, turn done to 0 after gesture has been processed by thread
             }
         }

@@ -24,7 +24,6 @@ import java.util.Set;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static com.example.apisource.apithread.apiout;
 import static java.lang.Boolean.FALSE;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,9 +32,7 @@ public class MainActivity extends AppCompatActivity {
     static PipedInputStream pis = null;
     ConnectThread ConThread;
 
-    public static volatile int received = 0; //flag representing if the gesture detected has been received by the application thread
-    public static volatile int poll = 0;
-    int apiinit = 0; //goes to 1 if all threads involving api have been started
+    int apiinit = 0; //goes to 1 if all threads involving api have been started; necessary flag for checking imu data
     Handler h;
     Runnable r;
 
@@ -118,33 +115,24 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         String buff = "";
-
+        if(this.isExternalStorageWritable()){
+        } else System.exit(0);
 
         //for raw nou oof file type (deprecated)
-        /*if(this.isExternalStorageWritable()){
-        } else System.exit(0);
-        File root = Environment.getExternalStorageDirectory();
-        File dir = new File(root.getAbsolutePath()+"/Download");
+        /*File root = Environment.getExternalStorageDirectory();
+        File dir = new File(root.getAbsolutePath()+"/Download"); //stores file in external memory, inside folder downloads
         File raw = new File(dir, "test");
         File nou = new File(dir, "test.nou");
         File oof = new File(dir, "test.oof");
         if(raw.exists()) raw.delete();
         if(nou.exists()) nou.delete();
-        if(oof.exists()) oof.delete();
-
-        if(this.isExternalStorageWritable()){
-        } else System.exit(0);
-        File root = Environment.getExternalStorageDirectory();
-        File dir = new File(root.getAbsolutePath()+"/Download"); */
+        if(oof.exists()) oof.delete();*/
 
         //sample ui
         setContentView(R.layout.activity_main);
         TextView tv = findViewById(R.id.sample_text);
         final TextView tv2 = findViewById(R.id.data);
         final TextView tv3 = findViewById(R.id.gesturedata);
-        /*fn = findViewById(R.id.FileName);
-        logb = findViewById(R.id.logb);
-        record100b = findViewById(R.id.record100b);*/
 
         api_bt btsample = new api_bt();
         btsample.act = this;
@@ -160,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 ConThread = new ConnectThread(btdev, btsample.btadt); //creates connection from specified bt adapter to bt device
                 Thread athread = new Thread(ConThread);
                 athread.start(); //this has to start in another thread since thread closes after connection is established
+
                 //application code separate from the api starts here
                 h = new Handler(); //for viewing data received from imu
                 r = new Runnable(){
@@ -177,16 +166,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 h.postDelayed(r, 1);
-                /*record100b.OnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View v){
-                        if(record==0){
-                            name = fn.getText().toString();
-                            fp = new File(dir, "name"+".txt");
-                            record = 1;
-                        }
-                    }
-                })*/
             } else System.exit(0); //app closes if not paired to imu device
         }
     }

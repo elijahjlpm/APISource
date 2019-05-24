@@ -1,5 +1,7 @@
 package com.example.apisource;
 
+import android.os.Environment;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +20,6 @@ public class functions {
             i++;
         } return array;
     }
-
     public static double[][] Copy2DimDouble(double[][] src, int rows, int cols){//can copy buffer corresponding to gesture, for debugging
         int i = 0;
         double[][] dest = new double[rows][cols];
@@ -27,7 +28,6 @@ public class functions {
             i++;
         } return dest;
     }
-
     public static void LogData(File path, double[] array, int cols){ //adds 1 frame in a new line of specified file
         // when starting new log with same name, overwrite file  with append = false since function only appends
         int i = 0;
@@ -45,18 +45,35 @@ public class functions {
             e.printStackTrace();
         }
     }
-
-    public static double[][] GetTrainingSample(String name, double[][] array, int cnt, double[] frame, int cols, int rows){
-        //gets sample to train model
-        //name is gesture name, array buffer to be used in model, cnt is nth frame of sample, cols is number of values in a single frame, rows is # of frames in a single sample
-        //cnt has to be adjusted in calling function; increment by 1 after calling this function, reset to 0 after cnt==rows
+    public static void bufftofile(double[][] array, int cols, int rows, String filename){
+        //stores buffer to file
+        File root = Environment.getExternalStorageDirectory();
+        File dir = new File(root.getAbsolutePath()+"/Download"); //stores file in external memory, inside folder downloads
+        File path = new File(dir, filename);
+        if(path.exists()) path.delete();
         int i = 0;
-        if(cnt<rows){
-            while(i<cols){
-                array[cnt][i] = frame[i];
+        int j = 0;
+        try {
+            FileOutputStream fos = new FileOutputStream(path, true);
+            while(i<rows){
+                while(j<cols){
+                    fos.write(Double.toString(array[i][j]).getBytes());
+                    if(j == cols - 1){
+                        fos.write(("\n").getBytes());
+                    } else{
+                        fos.write((", ").getBytes());
+                        j++;
+                    }
+                }
+                j = 0;
                 i++;
             }
-        } return array;
+            fos.close();
+        } catch(FileNotFoundException e){
+            e.printStackTrace();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     public static void RemoveFirstLine(File input){//for raw nou oof (deprecated)

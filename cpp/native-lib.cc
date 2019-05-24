@@ -177,30 +177,31 @@ Java_com_example_apisource_frameproc_frpfxn(
     jdouble out[9];
 
     if(length == 31){
-        //if (buffer[8] == (jbyte) (0x55 + 0x51 + buffer[0] + buffer[1] + buffer[2] + buffer[3] + buffer[4] + buffer[5] + buffer[6] + buffer[7])) {
+        if (buffer[8] == (jbyte) (0x55 + 0x51 + buffer[0] + buffer[1] + buffer[2] + buffer[3] + buffer[4] + buffer[5] + buffer[6] + buffer[7])) {
             a[0] = (jdouble)((jshort) (buffer[1] << 8 | buffer[0])) / 32768.0 * 16.0;
             a[1] = (jdouble)((jshort) (buffer[3] << 8 | buffer[2])) / 32768.0 * 16.0;
             a[2] = (jdouble)((jshort) (buffer[5] << 8 | buffer[4])) / 32768.0 * 16.0;
-        //} else {
-        //    __android_log_write(ANDROID_LOG_DEBUG,"frpfxn", "Checksum Error");
-        //return NULL; //checksum error
-        //}
-        //if (buffer[19] == (jbyte) (0x55 + 0x52 + buffer[11] + buffer[12] + buffer[13] + buffer[14] + buffer[15] + buffer[16] + buffer[17] + buffer[18])) {
+        } else {
+            __android_log_write(ANDROID_LOG_DEBUG,"frpfxn", "Checksum Error");
+            return NULL; //checksum error
+        }
+        if (buffer[19] == (jbyte) (0x55 + 0x52 + buffer[11] + buffer[12] + buffer[13] + buffer[14] + buffer[15] + buffer[16] + buffer[17] + buffer[18])) {
             w[0] = (jdouble)((jshort) (buffer[12] << 8 | buffer[11])) / 32768.0 * 2000.0;
             w[1] = (jdouble)((jshort) (buffer[14] << 8 | buffer[13])) / 32768.0 * 2000.0;
             w[2] = (jdouble)((jshort) (buffer[16] << 8 | buffer[15])) / 32768.0 * 2000.0;
-        //} else {
-         //   __android_log_write(ANDROID_LOG_DEBUG,"frpfxn", "Checksum Error");
-         //   return NULL; //checksum error
-        //}
-        //if (buffer[30] == (jbyte) (0x55 + 0x53 + buffer[22] + buffer[23] + buffer[24] + buffer[25] + buffer[26] + buffer[27] + buffer[28] + buffer[29])) {
+        } else {
+            __android_log_write(ANDROID_LOG_DEBUG,"frpfxn", "Checksum Error");
+            return NULL; //checksum error
+        }
+        if (buffer[30] == (jbyte) (0x55 + 0x53 + buffer[22] + buffer[23] + buffer[24] + buffer[25] + buffer[26] + buffer[27] + buffer[28] + buffer[29])) {
             Angle[0] = (jdouble)((jshort) (buffer[23] << 8 | buffer[22])) / 32768.0 * 180.0;
             Angle[1] = (jdouble)((jshort) (buffer[25] << 8 | buffer[24])) / 32768.0 * 180.0;
             Angle[2] = (jdouble)((jshort) (buffer[27] << 8 | buffer[26])) / 32768.0 * 180.0;
-        //} else {
-         //   __android_log_write(ANDROID_LOG_DEBUG,"frpfxn", "Checksum Error");
-        //    return NULL; //checksum error
-        //}
+        } else {
+            __android_log_write(ANDROID_LOG_DEBUG,"frpfxn", "Checksum Error");
+            return NULL; //checksum error
+        }
+
         /*uv[0] = (cos(Angle[2]* M_1_PIl) * sin(Angle[1]* M_1_PIl) * cos(Angle[0]* M_1_PIl)) + (sin(Angle[2]* M_1_PIl) * sin(Angle[0]* M_1_PIl));
         uv[1] = (sin(Angle[2]* M_1_PIl) * sin(Angle[1]* M_1_PIl) * cos(Angle[0]* M_1_PIl)) - (cos(Angle[2]* M_1_PIl) * sin(Angle[0]* M_1_PIl));
         uv[2] = cos(Angle[1]* M_1_PIl) * cos(Angle[0]* M_1_PIl);*/
@@ -281,7 +282,7 @@ Java_com_example_apisource_apithread_apirunmt(
 
     jstring result;
 
-    static int *fd1 = (int *) malloc(2*sizeof(int)); //Used to pass thread results from child to parent. fd[0] for read, fd[1] for write
+    static int fd1[2]; //Used to pass thread results from child to parent. fd[0] for read, fd[1] for write
     pipe(fd1); //for ipc bet. parent and child1
     if (pipe(fd1)==-1){
         result = env->NewStringUTF("pipe error");
@@ -444,6 +445,7 @@ Java_com_example_apisource_apithread_apirunmt(
         if(found_Y_neg == 1 && (outputY["signals"][1] == -1)) ++detect_backward;
 
         int pid1rec[8];
+        wait(NULL);
         read(fd1[0], pid1rec, sizeof(pid1rec));
         close(fd1[0]);
 
@@ -463,31 +465,25 @@ Java_com_example_apisource_apithread_apirunmt(
         delete[] accY;
         delete[] accZ;
         delete[] avY;
-        free(fd1);
 
         if(detect_cc){
             result = env->NewStringUTF("cc");
-            free(fd1);
             return result;
         }
         if(detect_cw){
             result = env->NewStringUTF("cw");
-            free(fd1);
             return result;
         }
         if(pid1rec[5] != 0){
             result = env->NewStringUTF("upleft");
-            free(fd1);
             return result;
         }
         if(pid1rec[4] != 0){
             result = env->NewStringUTF("upright");
-            free(fd1);
             return result;
         }
         if(pid1rec[7] != 0){
             result = env->NewStringUTF("downleft");
-            free(fd1);
             return result;
         }
         if(pid1rec[6] != 0){
